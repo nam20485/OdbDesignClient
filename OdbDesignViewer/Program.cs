@@ -1,10 +1,31 @@
-﻿namespace OdbDesignViewer
+﻿using OpenTK.Mathematics;
+using OpenTK.Windowing.Common;
+using OpenTK.Windowing.Desktop;
+
+namespace Odb.Client.Viewer
 {
     internal class Program
     {
-        static void Main(string[] args)
+        static int Main(string[] args)
         {
-            Console.WriteLine("Hello, World!");
+            if (args.Length > 0)
+            {
+                var nativeWindowSettings = new NativeWindowSettings()
+                {
+                    Size = new Vector2i(800, 600),
+                    Title = "ODB Design Client Viewer",
+                    // This is needed to run on macos
+                    Flags = ContextFlags.ForwardCompatible
+                };
+
+                using var game = new Window(GameWindowSettings.Default, nativeWindowSettings, args[0]);
+                game.Run();
+                return 0;
+            }
+            else
+            {
+                throw new Exception("Invalid arguments: no shaders path specified (use --shaders-path)");
+            }            
         }
     }
 }

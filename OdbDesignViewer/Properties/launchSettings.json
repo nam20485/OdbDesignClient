@@ -1,0 +1,8 @@
+{
+  "profiles": {
+    "OdbDesignViewer": {
+      "commandName": "Project",
+      "commandLineArgs": "\"../../../shaders\""
+    }
+  }
+}
