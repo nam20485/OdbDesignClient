@@ -11,30 +11,43 @@ namespace Odb.Client.Viewer
     {
         private readonly float[] _vertices =
         {
-            // positions        // colors
-            0.5f, -0.5f, 0.0f,  1.0f, 0.0f, 0.0f,   // bottom right
-            -0.5f, -0.5f, 0.0f, 0.0f, 1.0f, 0.0f,   // bottom left
-            0.0f,  0.5f, 0.0f,  0.0f, 0.0f, 1.0f    // top 
+            // Position        Texture coordinates
+            0.5f,  0.5f, 0.0f, 1.0f, 1.0f,  // top right
+            0.5f, -0.5f, 0.0f, 1.0f, 0.0f,  // bottom right
+            -0.5f, -0.5f, 0.0f, 0.0f, 0.0f, // bottom left
+            -0.5f,  0.5f, 0.0f, 0.0f, 1.0f  // top left
         };
 
-        //private readonly uint[] _indices =
-        //{
-        //    0, 1, 3, // first triangle
-        //    1, 2, 3  // second triangle
-        //};
+        private readonly float[] texCoords =
+        {
+            0.0f, 0.0f,  // lower-left corner  
+            1.0f, 0.0f,  // lower-right corner
+            0.5f, 1.0f   // top-center corner
+        };
+
+        private readonly uint[] _indices =
+        {
+            0, 1, 3,
+            1, 2, 3
+        };
 
         private int _hVertexBufferObject;
         private int _hVertexArrayObject;
         private int _hElementBufferObject;
 
         private Shader _shader;
-
         private readonly string _shadersPath;
 
-        public Window(GameWindowSettings gameWindowSettings, NativeWindowSettings nativeWindowSettings, string shadersPath)
+        private Texture _texture;
+        private string _texturesPath;
+
+        //private readonly Stopwatch _timer = new();
+
+        public Window(GameWindowSettings gameWindowSettings, NativeWindowSettings nativeWindowSettings, string shadersPath, string texturesPath)
             : base(gameWindowSettings, nativeWindowSettings)
         {
             _shadersPath = shadersPath;
+            _texturesPath = texturesPath;
         }     
 
         protected override void OnUpdateFrame(FrameEventArgs args)
@@ -52,37 +65,48 @@ namespace Odb.Client.Viewer
         {
             base.OnLoad();
 
-            GL.ClearColor(0.2f, 0.3f, 0.3f, 1.0f);                        
+            //_timer.Start();
+
+            GL.ClearColor(0.2f, 0.3f, 0.3f, 1.0f);
+
+            _hVertexArrayObject = GL.GenVertexArray();
+            GL.BindVertexArray(_hVertexArrayObject);
 
             // create buffer
             _hVertexBufferObject = GL.GenBuffer();
             // bind buffer to target
             GL.BindBuffer(BufferTarget.ArrayBuffer, _hVertexBufferObject);
             // add our vertice data to the buffer
-            GL.BufferData(BufferTarget.ArrayBuffer, _vertices.Length*sizeof(float), _vertices, BufferUsageHint.StaticDraw);           
+            GL.BufferData(BufferTarget.ArrayBuffer, _vertices.Length*sizeof(float), _vertices, BufferUsageHint.StaticDraw);
 
-            _hVertexArrayObject = GL.GenVertexArray();
-            GL.BindVertexArray(_hVertexArrayObject);                       
-
-            // tell OpenGL how to interpret our vertex data
-            GL.VertexAttribPointer(0, 3, VertexAttribPointerType.Float, false, 6 * sizeof(float), 0);
-            GL.EnableVertexAttribArray(0);
-
-            // tell OpenGL how to interpret our vertex data
-            GL.VertexAttribPointer(1, 3, VertexAttribPointerType.Float, false, 6 * sizeof(float), 3*sizeof(float));
-            GL.EnableVertexAttribArray(1);
-
-            //_hElementBufferObject = GL.GenBuffer();
-            //GL.BindBuffer(BufferTarget.ElementArrayBuffer, _hElementBufferObject);
-            //GL.BufferData(BufferTarget.ElementArrayBuffer, _indices.Length * sizeof(uint), _indices, BufferUsageHint.StaticDraw);
+            _hElementBufferObject = GL.GenBuffer();
+            GL.BindBuffer(BufferTarget.ElementArrayBuffer, _hElementBufferObject);
+            GL.BufferData(BufferTarget.ElementArrayBuffer, _indices.Length * sizeof(uint), _indices, BufferUsageHint.StaticDraw);
 
             _shader = new Shader($"{_shadersPath}/shader.vert", $"{_shadersPath}/shader.frag");
             _shader.Use();
+           
+            var vertexAttribLocation = _shader.GetAttribLocation("aPosition");
+            // tell OpenGL how to interpret our vertex data
+            GL.VertexAttribPointer(vertexAttribLocation, 3, VertexAttribPointerType.Float, false, 5 * sizeof(float), 0);
+            GL.EnableVertexAttribArray(vertexAttribLocation);
 
-            _timer.Start();
-        }
+            var texCoordLocation = _shader.GetAttribLocation("aTexCoord");
+            GL.EnableVertexAttribArray(texCoordLocation);
+            GL.VertexAttribPointer(texCoordLocation, 2, VertexAttribPointerType.Float, false, 5 * sizeof(float), 3 * sizeof(float));
 
-        private readonly Stopwatch _timer = new();
+            //GL.TexParameter(TextureTarget.Texture2D, TextureParameterName.TextureWrapS, (int)TextureWrapMode.Repeat);
+            //GL.TexParameter(TextureTarget.Texture2D, TextureParameterName.TextureWrapT, (int)TextureWrapMode.Repeat);
+
+            //GL.TexParameter(TextureTarget.Texture2D, TextureParameterName.TextureMinFilter, (int)TextureMinFilter.Nearest);
+            //GL.TexParameter(TextureTarget.Texture2D, TextureParameterName.TextureMagFilter, (int)TextureMagFilter.Linear);
+
+            //GL.TexParameter(TextureTarget.Texture2D, TextureParameterName.TextureMinFilter, (int)TextureMinFilter.LinearMipmapLinear);
+            //GL.TexParameter(TextureTarget.Texture2D, TextureParameterName.TextureMagFilter, (int)TextureMagFilter.Linear);
+
+            _texture = Texture.LoadFromFile($"{_texturesPath}/container.jpg");
+            _texture.Use(TextureUnit.Texture0);
+        }        
 
         protected override void OnRenderFrame(FrameEventArgs args)
         {
@@ -90,10 +114,14 @@ namespace Odb.Client.Viewer
 
             GL.Clear(ClearBufferMask.ColorBufferBit);
 
-            _shader.Use();
+            GL.BindVertexArray(_hVertexArrayObject);
 
-            GL.BindVertexArray(_hVertexArrayObject);   
-            GL.DrawArrays(PrimitiveType.Triangles, 0, 3);            
+            _shader.Use();
+            _texture.Use(TextureUnit.Texture0);
+
+            GL.DrawElements(PrimitiveType.Triangles, _indices.Length, DrawElementsType.UnsignedInt, 0);
+
+            //GL.DrawArrays(PrimitiveType.Triangles, 0, 3);            
 
             SwapBuffers();           
         }
@@ -121,7 +149,7 @@ namespace Odb.Client.Viewer
 
             _shader.Dispose();
 
-            _timer.Stop();            
+            //_timer.Stop();            
             
             base.OnUnload();
         }

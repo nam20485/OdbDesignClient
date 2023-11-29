@@ -1,16 +1,11 @@
-﻿using System.Reflection.Metadata;
-
-using OpenTK.Graphics.OpenGL4;
+﻿using OpenTK.Graphics.OpenGL4;
 
 namespace Odb.Client.Viewer
 {
-    public class Shader : IDisposable
-    {        
-        public int Handle { get; }
-
-        private bool _disposed;
-
+    public class Shader : GlHandleObj
+    {                       
         public Shader(string vertexPath, string fragmentPath)
+            : base()
         {            
             // vertex shader: shader.vert
             var vertexShaderSource = File.ReadAllText(vertexPath);
@@ -63,42 +58,11 @@ namespace Odb.Client.Viewer
         public int GetAttribLocation(string attribName)
         {
             return GL.GetAttribLocation(Handle, attribName);
-        }
+        }       
 
-        protected virtual void Dispose(bool disposing)
+        protected override void FreeUnmanagedResources()
         {
-            if (!_disposed)
-            {
-                if (disposing)
-                {
-                    // dispose managed state (managed objects)
-                }
-
-                // free unmanaged resources (unmanaged objects) and override finalizer
-                // (set large fields to null)
-                GL.DeleteProgram(Handle);                
-
-                _disposed = true;
-            }
-        }
-
-        // TODO: override finalizer only if 'Dispose(bool disposing)' has code to free unmanaged resources
-        ~Shader()
-        {
-            // Do not change this code! Put cleanup code in 'Dispose(bool disposing)' method
-            Dispose(disposing: false);
-
-            if (! _disposed)
-            {
-                Console.WriteLine("GPU Resource leak! Did you forget to call Dispose()?");
-            }
-        }
-
-        public void Dispose()
-        {
-            // Do not change this code. Put cleanup code in 'Dispose(bool disposing)' method
-            Dispose(disposing: true);
-            GC.SuppressFinalize(this);
+            GL.DeleteProgram(Handle);
         }
     }
 }

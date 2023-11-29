@@ -2,7 +2,7 @@
   "profiles": {
     "OdbDesignViewer": {
       "commandName": "Project",
-      "commandLineArgs": "\"../../../shaders\""
+      "commandLineArgs": "\"../../../shaders\"\r\n\"../../../textures\""
     }
   }
 }
