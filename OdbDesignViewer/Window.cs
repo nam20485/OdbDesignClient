@@ -11,17 +11,17 @@ namespace Odb.Client.Viewer
     {
         private readonly float[] _vertices =
         {
-            0.5f,  0.5f, 0.0f,  // top right
-            0.5f, -0.5f, 0.0f,  // bottom right
-            -0.5f, -0.5f, 0.0f, // bottom left
-            -0.5f,  0.5f, 0.0f  // top left
+            // positions        // colors
+            0.5f, -0.5f, 0.0f,  1.0f, 0.0f, 0.0f,   // bottom right
+            -0.5f, -0.5f, 0.0f, 0.0f, 1.0f, 0.0f,   // bottom left
+            0.0f,  0.5f, 0.0f,  0.0f, 0.0f, 1.0f    // top 
         };
 
-        private readonly uint[] _indices =
-        {
-            0, 1, 3, // first triangle
-            1, 2, 3  // second triangle
-        };
+        //private readonly uint[] _indices =
+        //{
+        //    0, 1, 3, // first triangle
+        //    1, 2, 3  // second triangle
+        //};
 
         private int _hVertexBufferObject;
         private int _hVertexArrayObject;
@@ -65,12 +65,16 @@ namespace Odb.Client.Viewer
             GL.BindVertexArray(_hVertexArrayObject);                       
 
             // tell OpenGL how to interpret our vertex data
-            GL.VertexAttribPointer(0, 3, VertexAttribPointerType.Float, false, 3 * sizeof(float), 0);
+            GL.VertexAttribPointer(0, 3, VertexAttribPointerType.Float, false, 6 * sizeof(float), 0);
             GL.EnableVertexAttribArray(0);
 
-            _hElementBufferObject = GL.GenBuffer();
-            GL.BindBuffer(BufferTarget.ElementArrayBuffer, _hElementBufferObject);
-            GL.BufferData(BufferTarget.ElementArrayBuffer, _indices.Length * sizeof(uint), _indices, BufferUsageHint.StaticDraw);
+            // tell OpenGL how to interpret our vertex data
+            GL.VertexAttribPointer(1, 3, VertexAttribPointerType.Float, false, 6 * sizeof(float), 3*sizeof(float));
+            GL.EnableVertexAttribArray(1);
+
+            //_hElementBufferObject = GL.GenBuffer();
+            //GL.BindBuffer(BufferTarget.ElementArrayBuffer, _hElementBufferObject);
+            //GL.BufferData(BufferTarget.ElementArrayBuffer, _indices.Length * sizeof(uint), _indices, BufferUsageHint.StaticDraw);
 
             _shader = new Shader($"{_shadersPath}/shader.vert", $"{_shadersPath}/shader.frag");
             _shader.Use();
@@ -88,14 +92,8 @@ namespace Odb.Client.Viewer
 
             _shader.Use();
 
-            // update the uniform color
-            var timeValue = _timer.Elapsed.TotalSeconds;
-            var greenValue = (float)Math.Sin(timeValue) / 2.0f + 0.5f;
-            var vertexColorLocation = GL.GetUniformLocation(_shader.Handle, "ourColor");
-            GL.Uniform4(vertexColorLocation, 0.0f, greenValue, 0.0f, 1.0f);
-
-            GL.BindVertexArray(_hVertexArrayObject);              
-            GL.DrawElements(PrimitiveType.Triangles, _indices.Length, DrawElementsType.UnsignedInt, 0);
+            GL.BindVertexArray(_hVertexArrayObject);   
+            GL.DrawArrays(PrimitiveType.Triangles, 0, 3);            
 
             SwapBuffers();           
         }
