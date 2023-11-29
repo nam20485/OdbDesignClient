@@ -3,8 +3,12 @@
   <PropertyGroup>
     <TargetFramework>net6.0</TargetFramework>
     <ImplicitUsings>enable</ImplicitUsings>
-    <Nullable>enable</Nullable>
-    <RootNamespace>Odb.Lib.Client</RootNamespace>
+    <Nullable>annotations</Nullable>
+    <RootNamespace>Odb.Lib.Client.Utils</RootNamespace>
   </PropertyGroup>
+
+  <ItemGroup>
+    <ProjectReference Include="..\Utils\Utils.csproj" />
+  </ItemGroup>
 
 </Project>

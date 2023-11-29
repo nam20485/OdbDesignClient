@@ -1,12 +1,14 @@
-﻿using OpenTK.Graphics.OpenGL4;
+﻿using System.Xml.Linq;
+
+using OpenTK.Graphics.OpenGL4;
+using OpenTK.Mathematics;
 
 namespace Odb.Client.Viewer
 {
-    public class Shader : GlHandleObj
-    {                       
-        public Shader(string vertexPath, string fragmentPath)
-            : base()
-        {            
+    public class GlShader : GlHandleObj
+    {
+        public GlShader(string vertexPath, string fragmentPath)
+        {
             // vertex shader: shader.vert
             var vertexShaderSource = File.ReadAllText(vertexPath);
             var hVertexShader = GL.CreateShader(ShaderType.VertexShader);
@@ -52,15 +54,28 @@ namespace Odb.Client.Viewer
 
         public void Use()
         {
+            var rotation = Matrix4.CreateRotationZ(MathHelper.DegreesToRadians(90.0f));
+            var scale = Matrix4.CreateScale(0.5f, 0.5f, 0.5f);
+            var trans = rotation * scale;
+
             GL.UseProgram(Handle);
+
+            var location = GL.GetUniformLocation(Handle, "transform");
+            GL.UniformMatrix4(location, true, ref trans);
         }
 
         public int GetAttribLocation(string attribName)
         {
             return GL.GetAttribLocation(Handle, attribName);
-        }       
+        }
 
-        protected override void FreeUnmanagedResources()
+        public void SetInt(string name, int value)
+        {
+            var location = GL.GetUniformLocation(Handle, name);
+            GL.Uniform1(location, value);
+        }
+
+        protected override void Free()
         {
             GL.DeleteProgram(Handle);
         }

@@ -1,24 +1,12 @@
-﻿
-
-namespace Odb.Client.Viewer
+﻿namespace Odb.Client.Viewer
 {
     public abstract class GlHandleObj : IDisposable
     {
         public int Handle { get; protected set; }
 
-        private bool _disposed;       
+        private bool _disposed;
 
-        protected GlHandleObj()            
-        {           
-        }        
-
-        protected virtual void FreeManagedResources()
-        {
-        }
-
-        protected virtual void FreeUnmanagedResources()
-        {
-        }
+        protected abstract void Free();
 
         protected virtual void Dispose(bool disposing)
         {
@@ -26,10 +14,11 @@ namespace Odb.Client.Viewer
             {
                 if (disposing)
                 {
-                    FreeManagedResources();
+                    // do nothing (free managed resources)
                 }
 
-                FreeUnmanagedResources();
+                Free();
+                Handle = -1;
                 _disposed = true;
             }
         }

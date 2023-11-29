@@ -1,5 +1,4 @@
 ﻿using System.Diagnostics;
-
 using OpenTK.Graphics.OpenGL4;
 using OpenTK.Windowing.Common;
 using OpenTK.Windowing.Desktop;
@@ -35,10 +34,11 @@ namespace Odb.Client.Viewer
         private int _hVertexArrayObject;
         private int _hElementBufferObject;
 
-        private Shader _shader;
+        private GlShader _shader;
         private readonly string _shadersPath;
 
-        private Texture _texture;
+        private GlTexture _texture1;
+        private GlTexture _texture2;
         private string _texturesPath;
 
         //private readonly Stopwatch _timer = new();
@@ -83,7 +83,7 @@ namespace Odb.Client.Viewer
             GL.BindBuffer(BufferTarget.ElementArrayBuffer, _hElementBufferObject);
             GL.BufferData(BufferTarget.ElementArrayBuffer, _indices.Length * sizeof(uint), _indices, BufferUsageHint.StaticDraw);
 
-            _shader = new Shader($"{_shadersPath}/shader.vert", $"{_shadersPath}/shader.frag");
+            _shader = new GlShader($"{_shadersPath}/shader.vert", $"{_shadersPath}/shader.frag");            
             _shader.Use();
            
             var vertexAttribLocation = _shader.GetAttribLocation("aPosition");
@@ -95,17 +95,14 @@ namespace Odb.Client.Viewer
             GL.EnableVertexAttribArray(texCoordLocation);
             GL.VertexAttribPointer(texCoordLocation, 2, VertexAttribPointerType.Float, false, 5 * sizeof(float), 3 * sizeof(float));
 
-            //GL.TexParameter(TextureTarget.Texture2D, TextureParameterName.TextureWrapS, (int)TextureWrapMode.Repeat);
-            //GL.TexParameter(TextureTarget.Texture2D, TextureParameterName.TextureWrapT, (int)TextureWrapMode.Repeat);
+            _texture1 = GlTexture.LoadFromFile($"{_texturesPath}/container.jpg");
+            _texture1.Use(TextureUnit.Texture0);
 
-            //GL.TexParameter(TextureTarget.Texture2D, TextureParameterName.TextureMinFilter, (int)TextureMinFilter.Nearest);
-            //GL.TexParameter(TextureTarget.Texture2D, TextureParameterName.TextureMagFilter, (int)TextureMagFilter.Linear);
+            _texture2 = GlTexture.LoadFromFile($"{_texturesPath}/awesomeface.png");
+            _texture2.Use(TextureUnit.Texture1);
 
-            //GL.TexParameter(TextureTarget.Texture2D, TextureParameterName.TextureMinFilter, (int)TextureMinFilter.LinearMipmapLinear);
-            //GL.TexParameter(TextureTarget.Texture2D, TextureParameterName.TextureMagFilter, (int)TextureMagFilter.Linear);
-
-            _texture = Texture.LoadFromFile($"{_texturesPath}/container.jpg");
-            _texture.Use(TextureUnit.Texture0);
+            _shader.SetInt("texture0", 0);
+            _shader.SetInt("texture1", 1);
         }        
 
         protected override void OnRenderFrame(FrameEventArgs args)
@@ -115,9 +112,10 @@ namespace Odb.Client.Viewer
             GL.Clear(ClearBufferMask.ColorBufferBit);
 
             GL.BindVertexArray(_hVertexArrayObject);
-
+            
+            _texture1.Use(TextureUnit.Texture0);
+            _texture2.Use(TextureUnit.Texture1);
             _shader.Use();
-            _texture.Use(TextureUnit.Texture0);
 
             GL.DrawElements(PrimitiveType.Triangles, _indices.Length, DrawElementsType.UnsignedInt, 0);
 
@@ -148,6 +146,8 @@ namespace Odb.Client.Viewer
             GL.DeleteProgram(_shader.Handle);                       
 
             _shader.Dispose();
+            _texture1.Dispose();
+            _texture2.Dispose();
 
             //_timer.Stop();            
             

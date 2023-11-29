@@ -3,9 +3,11 @@ Microsoft Visual Studio Solution File, Format Version 12.00
 # Visual Studio Version 17
 VisualStudioVersion = 17.7.34031.279
 MinimumVisualStudioVersion = 10.0.40219.1
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "OdbDesignViewer", "OdbDesignViewer\OdbDesignViewer.csproj", "{217D6B42-41AB-4C93-9E93-82F51771DB6A}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "OdbDesignViewer", "OdbDesignViewer\OdbDesignViewer.csproj", "{217D6B42-41AB-4C93-9E93-82F51771DB6A}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "OdbDesignClientLib", "OdbDesignClientLib\OdbDesignClientLib.csproj", "{21813149-6682-467C-B2C0-A3F2D8FE9A97}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "OdbDesignClientLib", "OdbDesignClientLib\OdbDesignClientLib.csproj", "{21813149-6682-467C-B2C0-A3F2D8FE9A97}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Utils", "Utils\Utils.csproj", "{71F104BC-4B0D-44E8-8AA8-FC8D1C14CB5E}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -21,6 +23,10 @@ Global
 		{21813149-6682-467C-B2C0-A3F2D8FE9A97}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{21813149-6682-467C-B2C0-A3F2D8FE9A97}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{21813149-6682-467C-B2C0-A3F2D8FE9A97}.Release|Any CPU.Build.0 = Release|Any CPU
+		{71F104BC-4B0D-44E8-8AA8-FC8D1C14CB5E}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{71F104BC-4B0D-44E8-8AA8-FC8D1C14CB5E}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{71F104BC-4B0D-44E8-8AA8-FC8D1C14CB5E}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{71F104BC-4B0D-44E8-8AA8-FC8D1C14CB5E}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

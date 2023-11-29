@@ -5,14 +5,14 @@ using StbImageSharp;
 
 namespace Odb.Client.Viewer
 {
-    public class Texture : GlHandleObj
-    {        
-        public Texture(int handle)
+    public class GlTexture : GlHandleObj
+    {
+        public GlTexture(int handle)
         {
             Handle = handle;
         }
 
-        internal static Texture LoadFromFile(string path)
+        internal static GlTexture LoadFromFile(string path)
         {
             // Generate handle
             var handle = GL.GenTexture();
@@ -62,24 +62,21 @@ namespace Odb.Client.Viewer
             GL.TexParameter(TextureTarget.Texture2D, TextureParameterName.TextureWrapT, (int)TextureWrapMode.Repeat);
 
             // Next, generate mipmaps.
-            // Mipmaps are smaller copies of the texture, scaled down. Each mipmap level is half the size of the previous one
-            // Generated mipmaps go all the way down to just one pixel.
             // OpenGL will automatically switch between mipmaps when an object gets sufficiently far away.
             // This prevents moiré effects, as well as saving on texture bandwidth.
-            // Here you can see and read about the morié effect https://en.wikipedia.org/wiki/Moir%C3%A9_pattern
-            // Here is an example of mips in action https://en.wikipedia.org/wiki/File:Mipmap_Aliasing_Comparison.png
             GL.GenerateMipmap(GenerateMipmapTarget.Texture2D);
 
-            return new Texture(handle);
+
+            return new GlTexture(handle);
         }
 
-        public void Use(TextureUnit unit)
+        public void Use(TextureUnit unit = TextureUnit.Texture0)
         {
             GL.ActiveTexture(unit);
             GL.BindTexture(TextureTarget.Texture2D, Handle);
         }
 
-        protected override void FreeUnmanagedResources()
+        protected override void Free()
         {
             GL.DeleteTexture(Handle);
         }
