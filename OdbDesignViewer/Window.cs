@@ -1,5 +1,6 @@
 ﻿using System.Diagnostics;
 using OpenTK.Graphics.OpenGL4;
+using OpenTK.Mathematics;
 using OpenTK.Windowing.Common;
 using OpenTK.Windowing.Desktop;
 using OpenTK.Windowing.GraphicsLibraryFramework;
@@ -10,11 +11,47 @@ namespace Odb.Client.Viewer
     {
         private readonly float[] _vertices =
         {
-            // Position        Texture coordinates
-            0.5f,  0.5f, 0.0f, 1.0f, 1.0f,  // top right
-            0.5f, -0.5f, 0.0f, 1.0f, 0.0f,  // bottom right
-            -0.5f, -0.5f, 0.0f, 0.0f, 0.0f, // bottom left
-            -0.5f,  0.5f, 0.0f, 0.0f, 1.0f  // top left
+            -0.5f, -0.5f, -0.5f,  0.0f, 0.0f,
+             0.5f, -0.5f, -0.5f,  1.0f, 0.0f,
+             0.5f,  0.5f, -0.5f,  1.0f, 1.0f,
+             0.5f,  0.5f, -0.5f,  1.0f, 1.0f,
+            -0.5f,  0.5f, -0.5f,  0.0f, 1.0f,
+            -0.5f, -0.5f, -0.5f,  0.0f, 0.0f,
+
+            -0.5f, -0.5f,  0.5f,  0.0f, 0.0f,
+             0.5f, -0.5f,  0.5f,  1.0f, 0.0f,
+             0.5f,  0.5f,  0.5f,  1.0f, 1.0f,
+             0.5f,  0.5f,  0.5f,  1.0f, 1.0f,
+            -0.5f,  0.5f,  0.5f,  0.0f, 1.0f,
+            -0.5f, -0.5f,  0.5f,  0.0f, 0.0f,
+
+            -0.5f,  0.5f,  0.5f,  1.0f, 0.0f,
+            -0.5f,  0.5f, -0.5f,  1.0f, 1.0f,
+            -0.5f, -0.5f, -0.5f,  0.0f, 1.0f,
+            -0.5f, -0.5f, -0.5f,  0.0f, 1.0f,
+            -0.5f, -0.5f,  0.5f,  0.0f, 0.0f,
+            -0.5f,  0.5f,  0.5f,  1.0f, 0.0f,
+
+             0.5f,  0.5f,  0.5f,  1.0f, 0.0f,
+             0.5f,  0.5f, -0.5f,  1.0f, 1.0f,
+             0.5f, -0.5f, -0.5f,  0.0f, 1.0f,
+             0.5f, -0.5f, -0.5f,  0.0f, 1.0f,
+             0.5f, -0.5f,  0.5f,  0.0f, 0.0f,
+             0.5f,  0.5f,  0.5f,  1.0f, 0.0f,
+
+            -0.5f, -0.5f, -0.5f,  0.0f, 1.0f,
+             0.5f, -0.5f, -0.5f,  1.0f, 1.0f,
+             0.5f, -0.5f,  0.5f,  1.0f, 0.0f,
+             0.5f, -0.5f,  0.5f,  1.0f, 0.0f,
+            -0.5f, -0.5f,  0.5f,  0.0f, 0.0f,
+            -0.5f, -0.5f, -0.5f,  0.0f, 1.0f,
+
+            -0.5f,  0.5f, -0.5f,  0.0f, 1.0f,
+             0.5f,  0.5f, -0.5f,  1.0f, 1.0f,
+             0.5f,  0.5f,  0.5f,  1.0f, 0.0f,
+             0.5f,  0.5f,  0.5f,  1.0f, 0.0f,
+            -0.5f,  0.5f,  0.5f,  0.0f, 0.0f,
+            -0.5f,  0.5f, -0.5f,  0.0f, 1.0f
         };
 
         private readonly float[] texCoords =
@@ -34,12 +71,16 @@ namespace Odb.Client.Viewer
         private int _hVertexArrayObject;
         private int _hElementBufferObject;
 
-        private GlShader _shader;
-        private readonly string _shadersPath;
+        private GlShader _shader;        
 
         private GlTexture _texture1;
         private GlTexture _texture2;
-        private string _texturesPath;
+
+        private readonly string _shadersPath;
+        private readonly string _texturesPath;
+
+        private Matrix4 _projection;
+        private Matrix4 _view;
 
         //private readonly Stopwatch _timer = new();
 
@@ -67,7 +108,9 @@ namespace Odb.Client.Viewer
 
             //_timer.Start();
 
-            GL.ClearColor(0.2f, 0.3f, 0.3f, 1.0f);
+            GL.Enable(EnableCap.DepthTest);
+
+            GL.ClearColor(0.2f, 0.3f, 0.3f, 1.0f);           
 
             _hVertexArrayObject = GL.GenVertexArray();
             GL.BindVertexArray(_hVertexArrayObject);
@@ -103,13 +146,21 @@ namespace Odb.Client.Viewer
 
             _shader.SetInt("texture0", 0);
             _shader.SetInt("texture1", 1);
-        }        
 
-        protected override void OnRenderFrame(FrameEventArgs args)
+            _view = Matrix4.CreateTranslation(0.0f, 0.0f, -3.0f);
+            _projection = Matrix4.CreatePerspectiveFieldOfView(MathHelper.DegreesToRadians(45.0f), Size.X / Size.Y, 0.1f, 100.0f);            
+        }
+
+        private double _time;
+
+        protected override void OnRenderFrame(FrameEventArgs fe)
         {
-            base.OnRenderFrame(args);
+            base.OnRenderFrame(fe);
+
+            _time += 50.0 * fe.Time;
 
             GL.Clear(ClearBufferMask.ColorBufferBit);
+            GL.Clear(ClearBufferMask.ColorBufferBit | ClearBufferMask.DepthBufferBit);
 
             GL.BindVertexArray(_hVertexArrayObject);
             
@@ -117,9 +168,17 @@ namespace Odb.Client.Viewer
             _texture2.Use(TextureUnit.Texture1);
             _shader.Use();
 
-            GL.DrawElements(PrimitiveType.Triangles, _indices.Length, DrawElementsType.UnsignedInt, 0);
+            var model = Matrix4.CreateRotationX((float)MathHelper.DegreesToRadians(_time));
+            //var model = Matrix4.Identity * Matrix4.CreateRotationX((float)MathHelper.DegreesToRadians(-55.0f));
+            //_view = Matrix4.CreateTranslation(0.0f, 0.0f, (float)-_time/100);            
 
+            _shader.SetMatrix4("model", model);
+            _shader.SetMatrix4("view", _view);
+            _shader.SetMatrix4("projection", _projection);
+
+            //GL.DrawElements(PrimitiveType.Triangles, _indices.Length, DrawElementsType.UnsignedInt, 0);
             //GL.DrawArrays(PrimitiveType.Triangles, 0, 3);            
+            GL.DrawArrays(PrimitiveType.Triangles, 0, 36);
 
             SwapBuffers();           
         }
