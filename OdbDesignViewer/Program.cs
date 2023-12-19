@@ -18,7 +18,7 @@ namespace Odb.Client.Viewer
                     Flags = ContextFlags.ForwardCompatible
                 };
 
-                using var game = new Window(GameWindowSettings.Default, nativeWindowSettings, args[0], args[1]);
+                using var game = new GlWindow(GameWindowSettings.Default, nativeWindowSettings, args[0], args[1]);
                 game.Run();
                 return 0;
             }

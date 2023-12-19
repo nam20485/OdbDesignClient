@@ -66,7 +66,6 @@ namespace Odb.Client.Viewer
             // This prevents moiré effects, as well as saving on texture bandwidth.
             GL.GenerateMipmap(GenerateMipmapTarget.Texture2D);
 
-
             return new GlTexture(handle);
         }
 
