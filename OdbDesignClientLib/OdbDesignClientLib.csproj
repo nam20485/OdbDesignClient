@@ -4,7 +4,7 @@
     <TargetFramework>net6.0</TargetFramework>
     <ImplicitUsings>enable</ImplicitUsings>
     <Nullable>annotations</Nullable>
-    <RootNamespace>Odb.Lib.Client.Utils</RootNamespace>
+    <RootNamespace>Odb.Client.Lib</RootNamespace>
   </PropertyGroup>
 
   <ItemGroup>
