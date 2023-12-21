@@ -12,7 +12,7 @@ internal class Program
                 !string.IsNullOrWhiteSpace(args[1]))
             {
                 var apiUri = new Uri(args[0]);
-                var client = new OdbDesignClient(apiUri);
+                var client = new OdbDesignHttpClient(apiUri);
 
                 var designName = args[1];
                 var fileArchive = client.FetchFileArchive(designName);
