@@ -1,6 +1,5 @@
 ﻿namespace Odb.Client.Lib
 {
-
     public class FileArchive
     {
         public Dictionary<string, StepDirectory> stepsByName { get; set; }
@@ -40,7 +39,7 @@
     public class FeaturesFile
     {
         public string units { get; set; }
-        public int id { get; set; }
+        public uint id { get; set; }
         public int numFeatures { get; set; }
         public FeatureRecord[] featureRecords { get; set; }
     }
@@ -55,20 +54,20 @@
         public float x { get; set; }
         public float y { get; set; }
         public int aptDefSymbolNum { get; set; }
-        public int aptDefResizeFactor { get; set; }
-        public int xc { get; set; }
-        public int yc { get; set; }
+        public float aptDefResizeFactor { get; set; }
+        public float xc { get; set; }
+        public float yc { get; set; }
         public bool cw { get; set; }
         public string font { get; set; }
-        public int xsize { get; set; }
-        public int ysize { get; set; }
-        public int widthFactor { get; set; }
+        public float xsize { get; set; }
+        public float ysize { get; set; }
+        public float widthFactor { get; set; }
         public string text { get; set; }
         public int version { get; set; }
-        public int symNum { get; set; }
+        public uint symNum { get; set; }
         public string polarity { get; set; }
         public int dcode { get; set; }
-        public int id { get; set; }
+        public uint id { get; set; }
         public int orientDef { get; set; }
         public int orientDefRotation { get; set; }
         public ContourPolygon[] contourPolygons { get; set; }
@@ -91,11 +90,18 @@
         public bool isClockwise { get; set; }
     }
 
+    public enum BoardSide
+    {
+        NotApplicable,
+        Top,
+        Bottom
+    }
+
     public class ComponentsFile
     {
         public string units { get; set; }
-        public int id { get; set; }
-        public string side { get; set; }
+        public uint id { get; set; }
+        public BoardSide side { get; set; }
         public string layerName { get; set; }
         public string path { get; set; }
         public string directory { get; set; }
@@ -128,13 +134,13 @@
 
     public class ToeprintRecord
     {
-        public int pinNumber { get; set; }
+        public uint pinNumber { get; set; }
         public float locationX { get; set; }
         public float locationY { get; set; }
-        public int rotation { get; set; }
+        public float rotation { get; set; }
         public bool mirror { get; set; }
-        public int netNumber { get; set; }
-        public int subnetNumber { get; set; }
+        public uint netNumber { get; set; }
+        public uint subnetNumber { get; set; }
         public string name { get; set; }
     }        
 
@@ -152,13 +158,13 @@
 
     public class NetName
     {
-        public int serialNumber { get; set; }
+        public uint serialNumber { get; set; }
         public string netName { get; set; }
     }
 
     public class NetPointRecord
     {
-        public int netNumber { get; set; }
+        public uint netNumber { get; set; }
         public float radius { get; set; }
         public float x { get; set; }
         public float y { get; set; }
@@ -195,7 +201,7 @@
     {
         public string name { get; set; }
         public string attributesIdString { get; set; }
-        public int index { get; set; }
+        public uint index { get; set; }
         public SubnetRecord[] subnetRecords { get; set; }
     }
 
@@ -203,16 +209,16 @@
     {
         public string type { get; set; }
         public FeatureIdRecord[] featureIdRecords { get; set; }
-        public string side { get; set; }
-        public int componentNumber { get; set; }
-        public int toeprintNumber { get; set; }
+        public BoardSide side { get; set; }
+        public uint componentNumber { get; set; }
+        public uint toeprintNumber { get; set; }
     }
 
     public class FeatureIdRecord
     {
         public string type { get; set; }
-        public int layerNumber { get; set; }
-        public int featureNumber { get; set; }
+        public uint layerNumber { get; set; }
+        public uint featureNumber { get; set; }
     }
     
     public class PackageRecord
@@ -233,25 +239,25 @@
         public string name { get; set; }
         public string type { get; set; }
         public float xCenter { get; set; }
-        public int yCenter { get; set; }
+        public float yCenter { get; set; }
         public int finishedHoleSize { get; set; }
         public string electricalType { get; set; }
         public string mountType { get; set; }
-        public int id { get; set; }
-        public int index { get; set; }
+        public uint id { get; set; }
+        public uint index { get; set; }
     }
 
     public class OutlineRecord
     {
         public string type { get; set; }
-        public int lowerLeftX { get; set; }
-        public int lowerLeftY { get; set; }
-        public int width { get; set; }
-        public int height { get; set; }
-        public int xCenter { get; set; }
-        public int yCenter { get; set; }
-        public int halfSide { get; set; }
-        public int radius { get; set; }
+        public float lowerLeftX { get; set; }
+        public float lowerLeftY { get; set; }
+        public float width { get; set; }
+        public float height { get; set; }
+        public float xCenter { get; set; }
+        public float yCenter { get; set; }
+        public float halfSide { get; set; }
+        public float radius { get; set; }
         public ContourPolygon[] contourPolygons { get; set; }
     }  
 
@@ -267,7 +273,7 @@
         public string saveApp { get; set; }
         public string saveUser { get; set; }
         public string units { get; set; }
-        public int maxUniqueId { get; set; }
+        public uint maxUniqueId { get; set; }
     }
 
     public class Matrixfile
@@ -278,19 +284,19 @@
 
     public class Step
     {
-        public int column { get; set; }
+        public uint column { get; set; }
         public string name { get; set; }
     }
 
     public class Layer
     {
-        public int row { get; set; }
+        public uint row { get; set; }
         public string type { get; set; }
         public string name { get; set; }
         public long cuTop { get; set; }
         public long cuBottom { get; set; }
         public long _ref { get; set; }
-        public int id { get; set; }
+        public uint id { get; set; }
         public string startName { get; set; }
         public string endName { get; set; }
         public string context { get; set; }
@@ -300,7 +306,7 @@
     {
         public float xSize { get; set; }
         public float ySize { get; set; }
-        public int offset { get; set; }
+        public float offset { get; set; }
         public CharacterBlock[] mCharacterBlocks { get; set; }
     }
 
