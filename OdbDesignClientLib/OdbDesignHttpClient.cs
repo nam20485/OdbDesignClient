@@ -3,11 +3,9 @@ using System.Text.Json.Serialization;
 
 namespace Odb.Client.Lib
 {
-    public class OdbDesignHttpClient : HttpClient
-    {
-        private const int SECONDS_PER_MINUTE = 60;
-
-        private readonly int _requestTimeoutInMinutes = 20;
+    public class OdbDesignHttpClient
+    {        
+        private readonly HttpClient _httpClient;
 
         private static readonly JsonSerializerOptions _jsonSerializerOptions = new()
         {
@@ -21,16 +19,16 @@ namespace Odb.Client.Lib
             }
         };
 
-        public OdbDesignHttpClient(Uri apiUri)
+        public OdbDesignHttpClient(HttpClient httpClient)
         {
-            BaseAddress = apiUri;
-            Timeout = TimeSpan.FromSeconds(_requestTimeoutInMinutes * SECONDS_PER_MINUTE);
+            _httpClient = httpClient;            
         }
 
         public async Task<FileArchive> FetchFileArchiveAsync(string name)
         {
             FileArchive fileArchive = null;
-            var response = await GetAsync($"filemodel/{name}");
+
+            var response = await _httpClient.GetAsync($"filemodel/{name}");
             if (response.IsSuccessStatusCode)
             {
                 const bool useLocalCopy = false;
@@ -43,12 +41,13 @@ namespace Odb.Client.Lib
                 }
                 else
                 {
-                    stream = await response.Content.ReadAsStreamAsync();                    
-                    File.WriteAllText(path, await response.Content.ReadAsStringAsync());                    
+                    File.WriteAllText(path, await response.Content.ReadAsStringAsync());
+                    stream = await response.Content.ReadAsStreamAsync();                                     
                 }
                 fileArchive = await JsonSerializer.DeserializeAsync<FileArchive>(stream, _jsonSerializerOptions);
 
             }
+
             return fileArchive;
         }
 
