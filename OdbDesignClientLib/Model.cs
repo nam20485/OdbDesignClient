@@ -1,12 +1,41 @@
 ﻿namespace Odb.Client.Lib
 {
+    public enum BoardSide
+    {
+        BS_None,
+        Top,
+        Bottom
+    }
+
+    public enum LineShape
+    {
+        Square,
+		Round
+    };
+
+    public enum Polarity
+    {
+        Positive,
+		Negative
+    };
+
+    public enum UnitType
+    {
+        None,
+		Metric,
+		Imperial
+    };
+
     public class FileArchive
     {
-        public Dictionary<string, StepDirectory> stepsByName { get; set; }
+        //public Dictionary<string, StepDirectory> stepsByName { get; set; }
+        public StepDirectory.StringDictionary stepsByName { get; set; }
         public MiscInfoFile miscInfoFile { get; set; }
         public Matrixfile matrixFile { get; set; }
         public StandardFontsFile standardFontsFile { get; set; }
-        public Dictionary<string, SymbolsDirectory> symbolsDirectoriesByName { get; set; }
+
+        //public Dictionary<string, SymbolsDirectory> symbolsDirectoriesByName { get; set; }
+        public SymbolsDirectory.StringDictionary symbolsDirectoriesByName { get; set; }
     }    
 
     public class StepDirectory
@@ -17,6 +46,8 @@
         public Dictionary<string, NetlistFile> netlistsByName { get; set; }
         public EdaDataFile edadatafile { get; set; }
         public AttrListFile attrlistfile { get; set; }
+
+        public class StringDictionary : Dictionary<string, StepDirectory>   {}
     }
 
     public class LayerDirectory
@@ -46,7 +77,17 @@
 
     public class FeatureRecord
     {
-        public string type { get; set; }
+        public enum Type
+        {
+            Arc,
+				Pad,
+				Surface,
+				Barcode,
+				Text,
+				Line
+        };
+
+        public Type type { get; set; }
         public float xs { get; set; }
         public float ys { get; set; }
         public float xe { get; set; }
@@ -65,7 +106,7 @@
         public string text { get; set; }
         public int version { get; set; }
         public uint symNum { get; set; }
-        public string polarity { get; set; }
+        public Polarity polarity { get; set; }
         public int dcode { get; set; }
         public uint id { get; set; }
         public int orientDef { get; set; }
@@ -75,7 +116,13 @@
 
     public class ContourPolygon
     {
-        public string type { get; set; }
+        public enum Type
+        {
+            Island,
+			Hole
+        };
+
+        public Type type { get; set; }
         public float xStart { get; set; }
         public float yStart { get; set; }
         public PolygonPart[] polygonParts { get; set; }
@@ -83,19 +130,18 @@
 
     public class PolygonPart
     {
+        public enum Type
+        {
+            Segment,
+            Arc
+        }
+
         public float endX { get; set; }
         public float endY { get; set; }
         public float xCenter { get; set; }
         public float yCenter { get; set; }
         public bool isClockwise { get; set; }
-    }
-
-    public enum BoardSide
-    {
-        NotApplicable,
-        Top,
-        Bottom
-    }
+    }    
 
     public class ComponentsFile
     {
@@ -146,11 +192,18 @@
 
     public class NetlistFile
     {
+        public enum Staggered
+        {
+            Yes,
+			No,
+			Unknown
+        };
+
         public string path { get; set; }
         public string name { get; set; }
         public string units { get; set; }
         public bool optimized { get; set; }
-        public string staggered { get; set; }
+        public Staggered staggered { get; set; }
         public NetName[] netNames { get; set; }
         public Dictionary<string, NetName> netRecordsByName { get; set; }
         public NetPointRecord[] netPointRecords { get; set; }
@@ -207,7 +260,28 @@
 
     public class SubnetRecord
     {
-        public string type { get; set; }
+        public enum Type
+        {
+            Via,
+            Trace,
+            Plane,
+            Toeprint
+        };
+        public enum FillType
+        {
+            Solid,
+            Outline
+        };
+
+        public enum CutoutType
+        {
+            Circle,
+            Rectangle,
+            Octagon,
+            Exact
+        };
+
+        public Type type { get; set; }
         public FeatureIdRecord[] featureIdRecords { get; set; }
         public BoardSide side { get; set; }
         public uint componentNumber { get; set; }
@@ -216,7 +290,14 @@
 
     public class FeatureIdRecord
     {
-        public string type { get; set; }
+        public enum Type
+        {
+            Copper,
+			Laminate,
+			Hole
+        };
+
+        public Type type { get; set; }
         public uint layerNumber { get; set; }
         public uint featureNumber { get; set; }
     }
@@ -236,20 +317,54 @@
 
     public class PinRecord
     {
+        public enum Type
+        {
+            ThroughHole,
+            Blind,
+            Surface
+        };
+
+        public enum ElectricalType
+        {
+            Electrical,
+            NonElectrical,
+            Undefined
+        };
+
+        public enum MountType
+        {
+            Smt,
+            RecommendedSmtPad,
+            MT_ThroughHole,
+            RecommendedThroughHole,
+            Pressfit,
+            NonBoard,
+            Hole,
+            MT_Undefined    // default
+        };
+
         public string name { get; set; }
-        public string type { get; set; }
+        public Type type { get; set; }
         public float xCenter { get; set; }
         public float yCenter { get; set; }
         public int finishedHoleSize { get; set; }
-        public string electricalType { get; set; }
-        public string mountType { get; set; }
+        public ElectricalType electricalType { get; set; }
+        public MountType mountType { get; set; }
         public uint id { get; set; }
         public uint index { get; set; }
     }
 
     public class OutlineRecord
     {
-        public string type { get; set; }
+        public enum Type
+        {
+            Rectangle,
+					Circle,
+					Square,
+					Contour
+        };
+
+        public Type type { get; set; }
         public float lowerLeftX { get; set; }
         public float lowerLeftY { get; set; }
         public float width { get; set; }
@@ -290,8 +405,44 @@
 
     public class Layer
     {
+        public enum Type
+        {
+            Signal,
+            PowerGround,
+            Dielectric,
+            Mixed,
+            SolderMask,
+            SolderPaste,
+            SilkScreen,
+            Drill,
+            Rout,
+            Document,
+            Component,
+            Mask,
+            ConductivePaste
+        };
+
+        public enum Context
+        {
+            Board,
+            Misc
+        };
+
+        public enum DielectricType
+        {
+            None,
+            Prepreg,
+            Core
+        };
+
+        public enum Form
+        {
+            Rigid,
+            Flex
+        };
+
         public uint row { get; set; }
-        public string type { get; set; }
+        public Type type { get; set; }
         public string name { get; set; }
         public long cuTop { get; set; }
         public long cuBottom { get; set; }
@@ -299,7 +450,7 @@
         public uint id { get; set; }
         public string startName { get; set; }
         public string endName { get; set; }
-        public string context { get; set; }
+        public Context context { get; set; }
     }
 
     public class StandardFontsFile
@@ -322,8 +473,8 @@
         public float yStart { get; set; }
         public float xEnd { get; set; }
         public float yEnd { get; set; }
-        public string polarity { get; set; }
-        public string shape { get; set; }
+        public Polarity polarity { get; set; }
+        public LineShape shape { get; set; }
         public float width { get; set; }
     }
 
@@ -333,5 +484,7 @@
         public string path { get; set; }
         public AttrListFile attrlistFile { get; set; }
         public FeaturesFile featureFile { get; set; }
+
+        public class StringDictionary : Dictionary<string, SymbolsDirectory> { }
     }
 }
