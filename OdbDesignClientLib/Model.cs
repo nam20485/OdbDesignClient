@@ -2,7 +2,7 @@
 {
     public enum BoardSide
     {
-        BS_None,
+        BsNone,
         Top,
         Bottom
     }
