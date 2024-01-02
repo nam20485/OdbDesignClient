@@ -28,13 +28,10 @@
 
     public class FileArchive
     {
-        //public Dictionary<string, StepDirectory> stepsByName { get; set; }
         public StepDirectory.StringDictionary stepsByName { get; set; }
         public MiscInfoFile miscInfoFile { get; set; }
         public Matrixfile matrixFile { get; set; }
-        public StandardFontsFile standardFontsFile { get; set; }
-
-        //public Dictionary<string, SymbolsDirectory> symbolsDirectoriesByName { get; set; }
+        public StandardFontsFile standardFontsFile { get; set; }        
         public SymbolsDirectory.StringDictionary symbolsDirectoriesByName { get; set; }
     }    
 
@@ -42,8 +39,8 @@
     {
         public string name { get; set; }
         public string path { get; set; }
-        public Dictionary<string, LayerDirectory> layersByName { get; set; }
-        public Dictionary<string, NetlistFile> netlistsByName { get; set; }
+        public LayerDirectory.StringDictionary layersByName { get; set; }
+        public NetlistFile.StringDictionary netlistsByName { get; set; }
         public EdaDataFile edadatafile { get; set; }
         public AttrListFile attrlistfile { get; set; }
 
@@ -57,6 +54,8 @@
         public ComponentsFile components { get; set; }
         public AttrListFile attrlistFile { get; set; }
         public FeaturesFile featureFile { get; set; }
+
+        public class StringDictionary : Dictionary<string, LayerDirectory> { }
     }     
 
     public class AttrListFile
@@ -205,14 +204,19 @@
         public bool optimized { get; set; }
         public Staggered staggered { get; set; }
         public NetName[] netNames { get; set; }
-        public Dictionary<string, NetName> netRecordsByName { get; set; }
+        public NetName.StringDictionary netRecordsByName { get; set; }
         public NetPointRecord[] netPointRecords { get; set; }
+
+        public class StringDictionary : Dictionary<string, NetlistFile> { }
+
     }     
 
     public class NetName
     {
         public uint serialNumber { get; set; }
         public string netName { get; set; }
+
+        public class StringDictionary : Dictionary<string, NetName> { }
     }
 
     public class NetPointRecord
@@ -245,9 +249,9 @@
         public string[] attributeNames { get; set; }
         public string[] attributeTextValues { get; set; }
         public NetRecord[] netRecords { get; set; }
-        public Dictionary<string, NetRecord> netRecordsByName { get; set; }
+        public NetRecord.StringDictionary netRecordsByName { get; set; }
         public PackageRecord[] packageRecords { get; set; }
-        public Dictionary<string, PackageRecord> packageRecordsByName { get; set; }
+        public PackageRecord.StringDictionary packageRecordsByName { get; set; }
     }    
 
     public class NetRecord
@@ -256,6 +260,8 @@
         public string attributesIdString { get; set; }
         public uint index { get; set; }
         public SubnetRecord[] subnetRecords { get; set; }
+
+        public class StringDictionary : Dictionary<string, NetRecord> { }
     }
 
     public class SubnetRecord
@@ -313,6 +319,8 @@
         public string attributesIdString { get; set; }
         public PinRecord[] pinRecords { get; set; }
         public OutlineRecord[] outlineRecords { get; set; }
+
+        public class StringDictionary : Dictionary<string, PackageRecord> { }
     }
 
     public class PinRecord
@@ -359,9 +367,9 @@
         public enum Type
         {
             Rectangle,
-					Circle,
-					Square,
-					Contour
+            Circle,
+            Square,
+            Contour
         };
 
         public Type type { get; set; }
