@@ -2,7 +2,7 @@
   "profiles": {
     "OdbDesignClient": {
       "commandName": "Project",
-      "commandLineArgs": "http://localhost:8888\r\nTurbot"
+      "commandLineArgs": "http://ods.local:8082\r\nTurbot"
     }
   }
 }
