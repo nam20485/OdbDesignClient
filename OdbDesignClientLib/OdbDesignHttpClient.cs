@@ -4,7 +4,9 @@ using System.Text.Json.Serialization;
 namespace Odb.Client.Lib
 {
     public class OdbDesignHttpClient
-    {        
+    {
+        public bool UseLocalCopy { get; } = false;
+
         private readonly HttpClient _httpClient;
 
         private static readonly JsonSerializerOptions _jsonSerializerOptions = new()
@@ -22,7 +24,7 @@ namespace Odb.Client.Lib
         public OdbDesignHttpClient(HttpClient httpClient)
         {
             _httpClient = httpClient;            
-        }
+        }        
 
         public async Task<FileArchive> FetchFileArchiveAsync(string name)
         {
@@ -30,12 +32,10 @@ namespace Odb.Client.Lib
 
             var response = await _httpClient.GetAsync($"filemodel/{name}");
             if (response.IsSuccessStatusCode)
-            {
-                const bool useLocalCopy = false;
-
+            {                
                 Stream stream = null;
                 var path = $"{name}.json";
-                if (useLocalCopy)
+                if (UseLocalCopy)
                 {
                     stream = new FileStream(path, FileMode.Open);                    
                 }
